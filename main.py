@@ -1,4 +1,4 @@
-# still you boy tim.Adurah 
+# still your boy tim.Adurah 
 from fastgate import *
 # If you want to add licence code you will call te function here with your desire expire date
 addNewLicense(10)
