@@ -1,99 +1,95 @@
-# License Manager System
+# License Management System
 
-This project provides a Python-based system for generating and managing licenses using OTP generation, encryption, hardware ID (HUID), and a license management controller. The system includes encryption for added security and allows license validation based on hardware unique identifiers.
+This project is a Python-based system for generating and managing licenses securely using OTP generation, encryption, hardware ID (HUID), and a license management controller. The system ensures that licenses are tied to specific machines and can be validated against expiration dates.
 
 ## Features
 
 - **OTP Generation**: Generates a one-time password (OTP) using a secret key.
-- **Encryption**: Encrypts generated OTPs using AES encryption.
+- **Encryption**: Encrypts the generated OTP using AES encryption to create a secure license code.
 - **HUID Generation**: Generates a hardware unique identifier (HUID) to tie licenses to specific machines.
-- **License Management**: Provides the ability to add, update, and verify license codes with expiration dates.
-- **License Validation**: Validates licenses based on the HUID and provided license code.
+- **License Management**: Add, update, and verify license codes with expiration periods.
+- **License Validation**: Ensures licenses are valid based on the HUID and the provided license code.
 
 ## Requirements
 
-Before running this project, you will need to install the required dependencies:
+To run this system, install the required dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## How to Use
+## Usage
 
-1. **Generate OTP and Encrypt it:**
+### Add a New License
 
-    The system generates a one-time password (OTP) using a secret key and encrypts the OTP to create a license identifier. The encrypted OTP will be used as the license code.
-
-    ```python
-    otp_generator = OneTimeAuthGenerator(SECRET_KEY)
-    generated_otp = otp_generator.generate_otp()
-    
-    encryption_manager = EncryptionManager(SECRET_KEY, SECRET_IV)
-    encoded = encryption_manager.encode_id(generated_otp)
-    
-    print(f"Encoded ID: {encoded}")
-    ```
-
-2. **Generate Hardware Unique Identifier (HUID):**
-
-    The system generates a hardware unique identifier (HUID) to tie licenses to a specific machine. This ensures that the license is hardware-bound.
-
-    ```python
-    huid_generator = HUID()
-    huid = huid_generator.get_hardware_id()
-    print(f"Hardware Unique Identifier (HUID): {huid}")
-    ```
-
-3. **Insert a License Code:**
-
-    You can add a new license code to the system, specifying the number of days for which the license is valid.
-
-    ```python
-    manager = LicenseManager()
-    manager.insert_license_code('NEW_LICENSE_CODE_123', 60)
-    ```
-
-4. **Verify a License Code:**
-
-    The system can verify if a license code is still valid based on the hardware ID and the provided license code.
-
-    ```python
-    if manager.verify_license(huid, license_code):
-        print("License is valid.")
-    else:
-        print("License has expired.")
-    ```
-
-## Example Usage
+This function generates a new OTP, encrypts it, and assigns it as the new license code. The code is then stored in the license manager with the specified expiration date.
 
 ```python
-if __name__ == '__main__':
-    # Generate OTP and encrypt it
+def addNewLicense(expireDate: int):
+    
     otp_generator = OneTimeAuthGenerator(SECRET_KEY)
     generated_otp = otp_generator.generate_otp()
 
     encryption_manager = EncryptionManager(SECRET_KEY, SECRET_IV)
     encoded = encryption_manager.encode_id(generated_otp)
 
-    print(f"Encoded ID: {encoded}")
+    manager = LicenseManager()
+    manager.insert_license_code(encoded, expireDate)
 
-    # Generate hardware unique identifier (HUID)
-    huid_generator = HUID()
-    huid = huid_generator.get_hardware_id()
-    print(f"Hardware Unique Identifier (HUID): {huid}")
+    return(manager.get_all_license_codes())
+```
 
-    # License management operations
+**Example:**
+
+```python
+licenses = addNewLicense(60)
+# that is 60days expiring date so you will pass the expire date and the licence will be create with the date 
+print("All licenses:", licenses)
+```
+
+### Login with a License
+
+This function checks the validity of a given license code using the machine's hardware ID (HUID). If the license is valid, it is added to the system or updated if necessary.
+
+```python
+def loginWithLicense(userLicense_code: str):
+    
     manager = LicenseManager()
 
-    # Insert a new license code valid for 60 days
-    manager.insert_license_code('NEW_LICENSE_CODE_123', 60)
+    huid_generator = HUID()
+    huid = huid_generator.get_hardware_id()
 
-    # Verify the license
-    if manager.verify_license(huid, 'LICENSE123'):
+    manager.add_license(huid, userLicense_code)
+
+    if manager.verify_license(huid, userLicense_code):
         print("License is valid.")
     else:
         print("License has expired.")
 ```
+
+**Example:**
+
+```python
+loginWithLicense('LICENSE_CODE_123')
+```
+
+## Example Workflow
+
+1. **Add a New License:**
+
+   A new license is created with a specified expiration period (in days). The OTP is encrypted to generate a secure license code.
+
+   ```python
+   addNewLicense(60)  # Adds a new license valid for 60 days
+   ```
+
+2. **Login with an Existing License:**
+
+   The system checks if the provided license code is valid for the current machine's hardware ID. If valid, the license is updated or inserted into the system.
+
+   ```python
+   loginWithLicense('LICENSE_CODE_123')
+   ```
 
 ## License
 
