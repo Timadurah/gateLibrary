@@ -1,4 +1,4 @@
-# License Management System
+# One Time Activation Code Libary (One Time Product key Libary)
 
 This project is a Python-based system for generating and managing licenses securely using OTP generation, encryption, hardware ID (HUID), and a license management controller. The system ensures that licenses are tied to specific machines and can be validated against expiration dates.
 
